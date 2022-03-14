@@ -4,7 +4,7 @@ import re
 from xml import dom
 import pandas as pd
 import anndata as ad
-from scAdapt import scAdapt
+from scAdapt_best import scAdapt
 import os
 import numpy as np
 import scanpy as sc
@@ -66,7 +66,7 @@ def preprocess(args):
 
         train_labels_domain.extend(test_labels_domain)
 
-        domain_labels = np.array(train_labels_domain)  # 鏍囪train鍜宼est鍚勬湁澶氬皯
+        domain_labels = np.array(train_labels_domain)  # 标记train和test各有多少
         print("domain_labels_pre:",domain_labels)
 
         data_set = {'features': normcounts, 'train_labels':train_labels_digit_np,'test_labels':test_labels_digit_np,
@@ -99,7 +99,7 @@ def preprocess(args):
 
         train_labels_domain.extend(test_labels_domain)
 
-        domain_labels = np.array(train_labels_domain)  # 鏍囪train鍜宼est鍚勬湁澶氬皯
+        domain_labels = np.array(train_labels_domain)  # 标记train和test各有多少
         print("domain_labels_pre:",domain_labels)
 
         data_set = {'features': normcounts, 'train_labels':train_labels_digit_np,'test_labels':test_labels_digit_np,
@@ -131,12 +131,12 @@ if __name__ == "__main__":
                         help='hyperparameter of VAT')
 
 
-    parser.add_argument('--num_iterations', type=int, default=3610, help="num_iterations")
-    parser.add_argument('--epoch_th', type=int, default=1200, help='epoch_th')
-    parser.add_argument('--epoch_per', type=int, default=240, help='epoch_per')
+    parser.add_argument('--num_iterations', type=int, default=35010, help="num_iterations")
+    parser.add_argument('--epoch_th', type=int, default=120000, help='epoch_th')
+    parser.add_argument('--epoch_per', type=int, default=2800, help='epoch_per')
     parser.add_argument('--gpu_id', type=str, nargs='?', default='0', help="device id to run")
     parser.add_argument('--mode', type=int, default=0, help="zero means test, one means submit")
-    parser.add_argument('--sample_num', type=int, default=2000, help="number of samples per cell type")
+    parser.add_argument('--sample_num', type=int, default=20000, help="number of samples per cell type")
 
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id  #'0,1,2,3'

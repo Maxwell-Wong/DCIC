@@ -112,7 +112,7 @@ def scAdapt(args, data_set):
 
     ## set optimizer
     config_optimizer = {"lr_type": "inv", "lr_param": {"lr": 0.001, "gamma": 0.001, "power": 0.75}}
-    parameter_list = base_network.get_parameters() + ad_net.get_parameters() + label_predictor.get_parameters() # å‚æ•°åˆ—è¡¨
+    parameter_list = base_network.get_parameters() + ad_net.get_parameters() + label_predictor.get_parameters() # ²ÎÊıÁĞ±í
     optimizer = optim.SGD(parameter_list, lr=1e-3, weight_decay=5e-4, momentum=0.9, nesterov=True)
     schedule_param = config_optimizer["lr_param"]
     lr_scheduler = lr_schedule.schedule_dict[config_optimizer["lr_type"]]
@@ -151,7 +151,7 @@ def scAdapt(args, data_set):
                 y_pred_label = [digit_label_dict[x] if x in digit_label_dict else "Unknown" for x in predict_label_arr.cpu().data.numpy()]  
             
 
-                # save  æœ€ç»ˆè¾“å‡º
+                # save  ×îÖÕÊä³ö
                 pred_labels_file = result_path + "submission_val_final" + "_" + str(epoch) + "(14)" + ".csv"
                 pd.DataFrame({'cell_id':data_set['barcode'], 'level1':y_pred_label}).to_csv(pred_labels_file, sep=',', index=False)
 
@@ -167,9 +167,9 @@ def scAdapt(args, data_set):
                     acc_by_label[i] = np.sum(predict_label_arr.cpu().data.numpy()[all_label == i] == i) / np.sum(all_label == i)
                 np.set_printoptions(suppress=True)
 
-                # è¯„ä¼°è¾“å‡º
+                # ÆÀ¹ÀÊä³ö
 
-                print('iter:', epoch, "average acc over all test cell types: ", round(np.nanmean(acc_by_label), 3))   # np.nanmean()è®¡ç®—éç©ºå€¼çš„ç®—æ•°å¹³å‡å€¼
+                print('iter:', epoch, "average acc over all test cell types: ", round(np.nanmean(acc_by_label), 3))   # np.nanmean()¼ÆËã·Ç¿ÕÖµµÄËãÊıÆ½¾ùÖµ
                 print("acc of each test cell type: ", np.round(acc_by_label, 3))
 
                 writer.add_scalar('EVAL/acc', np.nanmean(acc_by_label), epoch)
@@ -233,6 +233,8 @@ def scAdapt(args, data_set):
         _, s_tgt, _ = torch.svd(softmax_tgt)
         BNM_loss = -torch.mean(s_tgt)
 
+
+        """
         ########domain alignment loss
         if args.method == 'DANN':
             domain_prob_discriminator_1_source = ad_net.forward(feature_source)
@@ -249,6 +251,8 @@ def scAdapt(args, data_set):
             sigma_list = [1, 2, 4, 8, 16]
             sigma_list = [sigma / base for sigma in sigma_list]
             transfer_loss = loss_utility.mix_rbf_mmd2(feature_source, feature_target, sigma_list)
+        """
+        transfer_loss = torch.FloatTensor([0.0]).cuda()
 
 
         ######CrossEntropyLoss
